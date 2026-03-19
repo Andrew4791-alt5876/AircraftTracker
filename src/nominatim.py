@@ -32,10 +32,11 @@ class NominatimClient(APIClient):
         list_of_coord = []
         for country in country_name:
             try:
-                params = {"q": country, "format": "json", "limit": 1, "addressdetails": 1}
+                params = {"q": country, "format": "json", "limit": 1}
                 data = self._make_request("search", params, headers=self.headers)
                 coord_of_country = data[0]["boundingbox"]
                 list_of_coord.append(coord_of_country)
                 return list_of_coord
             except (ValueError, IndexError, TypeError) as e:
                 return []
+        return list_of_coord

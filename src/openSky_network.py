@@ -33,5 +33,5 @@ class OpenSkyClient(APIClient):
                 list_of_aircrafts += data
                 time.sleep(1)
             except BaseException as e:
-                print(f"Ошибка получения данных о самолетах {n} {e}!")
+                return []
         return list_of_aircrafts

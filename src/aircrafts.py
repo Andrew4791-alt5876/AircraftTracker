@@ -8,12 +8,13 @@ class Aircraft:
         origin_country: str,
         longitude: float,
         latitude: float,
-        baro_altitude: float,
-        on_ground: bool,
-        velocity: float,
-        true_track: float,
         vertical_rate: float,
+        velocity: float,
         geo_altitude: float,
+        true_track: float,
+        squawk: str,
+        on_ground: bool,
+        baro_altitude: float
     ) -> None:
 
         if not isinstance(id_aircraft, str):
@@ -40,6 +41,10 @@ class Aircraft:
             vertical_rate = 0.0
         if geo_altitude in (None, 0):
             geo_altitude = 0.0
+        if not isinstance(squawk, str) and squawk is not None:
+            raise ValueError("squawk должен быть строкой")
+        elif squawk is None:
+            squawk = '0000'
 
         self.id_aircraft = id_aircraft
         self.callsign = callsign
@@ -52,15 +57,15 @@ class Aircraft:
         self.true_track = float(true_track)
         self.vertical_rate = vertical_rate
         self.geo_altitude = geo_altitude
+        self.squawk = squawk
 
     def __repr__(self) -> str:
         """Строковое представление объекта для отладки."""
         return (
-            f"Aircraft(id_aircraft='{self.id_aircraft}', "
-            f"callsign='{self.callsign}',"
-            f" origin='{self.origin_country}', "
-            f"vel={self.velocity}, "
-            f"alt={self.geo_altitude})"
+            f"Aircraft(id_aircraft='{self.id_aircraft}', callsign='{self.callsign}', country='{self.origin_country}', "
+            f"lat={self.latitude}, lon={self.longitude}, vert_rate={self.vertical_rate}, "
+            f"vel={self.velocity}, alt={self.geo_altitude},"
+            f"true_track={self.true_track}, squawk={self.squawk}, on_ground={self.on_ground})"
         )
 
     def __eq__(self, other) -> bool:
@@ -75,5 +80,28 @@ class Aircraft:
             return NotImplemented
         return (self.velocity, self.geo_altitude) < (other.velocity, other.geo_altitude)
 
-    def sort_aircrafts_by_altitude(self):
-        pass
+    def to_dict(self):
+        """Преобразует объект в словарь для сохранения в JSON."""
+        return {
+            'id_aircraft': self.id_aircraft,
+            'callsign': self.callsign,
+            'country': self.origin_country,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'vertical_rate': self.vertical_rate,
+            'velocity': self.velocity,
+            'altitude': self.geo_altitude,
+            'true_track': self.true_track,
+            'squawk': self.squawk,
+            'on_ground': self.on_ground
+        }
+
+    @classmethod
+    def from_dict(cls, data) -> 'Aircraft':
+        """Создаёт объект Aircraft из словаря."""
+        return cls(
+            id_aircraft=data.get('id_aircraft'), callsign=data.get('callsign'), origin_country=data.get('country'),
+            latitude=data.get('latitude'), longitude=data.get('longitude'), vertical_rate=data.get('vertical_rate'),
+            velocity=data.get('velocity'), geo_altitude=data.get('altitude'), true_track=data.get('true_track'),
+            squawk=data.get('squawk'), on_ground=data.get('on_ground'), baro_altitude=data.get('baro_altitude')
+        )
