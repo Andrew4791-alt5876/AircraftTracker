@@ -85,7 +85,8 @@ if __name__ == "__main__":
     # a3 = planes[50]
 
     # Работа с JSON-хранилищем
-    # json_storage = JSONSaver("data/aircraft.json")
+    # timestamp = datetime.now().strftime("%Y%m%d")
+    # json_storage = JSONSaver(f"data/aircraft_{timestamp}.json")
     # for u in planes:
     #     json_storage.add_aircraft(u)
     # json_storage.add_aircraft(a2)

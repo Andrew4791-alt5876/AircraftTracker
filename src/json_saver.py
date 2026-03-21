@@ -1,5 +1,5 @@
 import json
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional, cast
 
 from src.aircrafts import Aircraft
 from src.saver import Saver
@@ -14,8 +14,9 @@ class JSONSaver(Saver):
     def _load_data(self) -> List[Dict[str, Any]]:
         """Загружает данные из JSON-файла. Если файла нет, возвращает пустой список."""
         try:
-            with open(self.filename, 'r', encoding='utf-8') as f:
-                return json.load(f)
+            with open(self.filename, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            return cast(list[dict[str, Any]], data)
         except FileNotFoundError:
             return []
         except json.JSONDecodeError:
@@ -24,7 +25,7 @@ class JSONSaver(Saver):
 
     def _save_data(self, data: List[Dict[str, Any]]) -> None:
         """Сохраняет данные в JSON-файл."""
-        with open(self.filename, 'w', encoding='utf-8') as f:
+        with open(self.filename, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
 
     def add_aircraft(self, aircraft: Aircraft) -> None:
