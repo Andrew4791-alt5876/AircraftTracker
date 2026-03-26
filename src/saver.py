@@ -11,7 +11,7 @@ class Saver(ABC):
     def add_aircraft(self, aircraft: Aircraft) -> None:
         """
         Добавляет информацию о самолёте в хранилище.
-        :param aircraft: объект Aircraft
+        :param aircraft: Объект Aircraft
         """
         pass
 
@@ -21,7 +21,7 @@ class Saver(ABC):
         Возвращает список самолётов, удовлетворяющих критериям.
         Если criteria == None, возвращает все записи.
         Критерии задаются словарём вида {поле: значение}. Проверяется точное совпадение.
-        :param criteria: словарь с условиями фильтрации
+        :param criteria: Словарь с условиями фильтрации
         :return: список объектов Aircraft
         """
         pass
@@ -31,6 +31,6 @@ class Saver(ABC):
         """
         Удаляет записи о самолётах, удовлетворяющих критериям.
         Если criteria == None, удаляет все записи.
-        :param criteria: словарь с условиями фильтрации
+        :param criteria: Словарь с условиями фильтрации
         """
         pass
