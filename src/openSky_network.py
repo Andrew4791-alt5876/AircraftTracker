@@ -25,7 +25,7 @@ class OpenSkyClient(APIClient):
         Возвращает сырые данные в виде списка.
         """
         if list_of_coord_country == []:
-            print("В запросе отсутствуют координаты страны!")
+            return []
         list_of_aircraft = []
         n = 0
         for coord in list_of_coord_country:
