@@ -1,6 +1,7 @@
 from datetime import datetime
+from typing import Any
 
-from data.data_countries import data_countries
+from data_countries import list_countries
 from src.aircrafts import Aircraft
 from src.json_saver import JSONSaver
 from src.nominatim import NominatimClient
@@ -20,9 +21,11 @@ def hello_by_current_time() -> str:
         hello_message = "Доброй ночи!"
     return hello_message
 
-def country_for_coord(countries):
+
+def country_for_coord(countries: list) -> list:
+    """Функция для ввода стран пользователем"""
     for i in range(0, len(countries), 9):
-        print(countries[i : (9 + i)])
+        print(countries[i: (9 + i)])
     country_user = []
     while True:
         print("Для прекращения ввода введите цифру 0")
@@ -30,26 +33,26 @@ def country_for_coord(countries):
         if user_input == "0":
             break
         if user_input.isalpha() or user_input in (
-                'Russian Federation',
-                'United Kingdom',
-                'United States',
-                'Viet Nam',
-                'Republic of Moldova',
-                'Dominican Republic', 
-                'Kingdom of the Netherlands', 
-                'Republic of Korea', 
-                'Saudi Arabia', 
-                'Trinidad and Tobago',
-                'South Africa',
-                'Brunei Darussalam',
-                'San Marino',
-                'United Arab Emirates',
-                'New Zealand',
-                'Libyan Arab Jamahiriya',
-                'Saint Vincent and the Grenadines',
-                'Czech Republic',
-                "Lao People's Democratic Republic",
-                'Sri Lanka'
+            "Russian Federation",
+            "United Kingdom",
+            "United States",
+            "Viet Nam",
+            "Republic of Moldova",
+            "Dominican Republic",
+            "Kingdom of the Netherlands",
+            "Republic of Korea",
+            "Saudi Arabia",
+            "Trinidad and Tobago",
+            "South Africa",
+            "Brunei Darussalam",
+            "San Marino",
+            "United Arab Emirates",
+            "New Zealand",
+            "Libyan Arab Jamahiriya",
+            "Saint Vincent and the Grenadines",
+            "Czech Republic",
+            "Lao People's Democratic Republic",
+            "Sri Lanka",
         ):
             print(f"Вы ввели {user_input}")
             country_user.append(user_input)
@@ -57,28 +60,34 @@ def country_for_coord(countries):
             print("Вы ввели не название страны, попробуйте еще раз!")
     return country_user
 
-def sort_aircraft_by_altitude(list_aircraft, sort_altitude):
-    if sort_altitude == 'y':
+
+def sort_aircraft_by_altitude(list_aircraft: list, sort_altitude: Any) -> list:
+    """Функция сортировки самолетов по высоте полета по убыванию или возрастанию, по желанию пользователя"""
+    if sort_altitude == "y":
         sort_reverse = False
     else:
         sort_reverse = True
     sorted_planes = sorted(
         list_aircraft,
-        key=lambda x: x.geo_altitude if x.geo_altitude is not None else float('inf'),
-        reverse=sort_reverse
+        key=lambda x: x.geo_altitude if x.geo_altitude is not None else float("inf"),
+        reverse=sort_reverse,
     )
     return sorted_planes
 
-def filter_aeroplanes_by_country(aeroplanes, filter_words):
+
+def filter_aeroplanes_by_country(aeroplanes: list, filter_words: list) -> list:
+    """Функция для сортировки самолетов по стране регистрации"""
     filtered = [plane for plane in aeroplanes if plane.origin_country in filter_words]
     return filtered
 
-def filter_aeroplanes_altitude(aeroplanes):
+
+def filter_aeroplanes_altitude(aeroplanes: list) -> list:
+    """Функция для сортировки самолетов по диапазону высот по желанию пользователя"""
     # Запрашиваем диапазон высот (например, "1000-5000" или "1000 5000")
     range_input = input("Введите диапазон высот полета (нижняя-верхняя через дефис или пробел): ")
     # Разбиваем ввод по дефису или пробелу
-    if '-' in range_input:
-        parts = range_input.split('-')
+    if "-" in range_input:
+        parts = range_input.split("-")
     else:
         parts = range_input.split()
     # Проверяем, что получили два значения
@@ -86,36 +95,49 @@ def filter_aeroplanes_altitude(aeroplanes):
         try:
             low_alt = float(parts[0].strip())
             high_alt = float(parts[1].strip())
-            altitude_range = (low_alt, high_alt)  # кортеж или список [low, high]
+            altitude_range = [low_alt, high_alt]  # кортеж или список [low, high]
         except ValueError:
             print("Некорректный ввод. Используйте числа.")
             altitude_range = [0.0, 20000]
     else:
         print("Некорректный ввод. Нужно ввести два числа через дефис или пробел.")
         altitude_range = [0.0, 20000]
-    # altitude_range = list(map(float, input("Введите диапазон высот (Пример: 10000-15000): ").split('-')))
     filtered = [plane for plane in aeroplanes if altitude_range[0] <= plane.geo_altitude <= altitude_range[1]]
     return filtered
 
-def user_interaction():
+
+def number_of_top() -> int:
+    """Функция ввода пользователем количества самолетов для вывода в консоль"""
+    numb_user = input("Введите количество самолетов для вывода в топ N: ")
+    if numb_user.isdigit():
+        numb = int(numb_user)
+    else:
+        numb = 3
+    return numb
+
+
+def user_interaction() -> list:
+    """Главная функция для запуска проекта"""
     print(f"{hello_by_current_time()}")
     print(
-        f"Добро пожаловать в программу, которая собирает данные о самолетах\n"
-        f"в воздушных пространствах тех стран, которые вы выберете.\n"
-        f"Пример стран из списка:"
+        "Добро пожаловать в программу, которая собирает данные о самолетах\n"
+        "в воздушных пространствах тех стран, которые вы выберете.\n"
+        "Пример стран из списка:"
     )
-    countries = data_countries()
+    countries = list_countries()
     user_country = country_for_coord(countries)
-    user_country_correct = [c for c in user_country if c.lower() not in (
-        'russia', 'rossia', 'russya', 'rossya', 'rusiya', 'ru', 'rus', 'rusia', 'rusland', 'rwasha'
-    )]
+    user_country_correct = [
+        c
+        for c in user_country
+        if c.lower()
+        not in ("russia", "rossia", "russya", "rossya", "rusiya", "ru", "rus", "rusia", "rusland", "rwasha")
+    ]
     coord = NominatimClient().get_country_coordinates(user_country_correct)
     if user_country != user_country_correct:
-        coord += [['41.1833333', '81.85', '19.6333333', '180.0'], ['41.1833333', '81.85', '-180.0', '-168.9833333']]
-    # # [['41.1833333', '81.85', '19.6333333', '180.0'], ['41.1833333', '81.85', '-180.0', '-168.9833333']] Russia
-    print(coord)
+        coord += [["41.1833333", "81.85", "19.6333333", "180.0"], ["41.1833333", "81.85", "-180.0", "-168.9833333"]]
+    # [['41.1833333', '81.85', '19.6333333', '180.0'], ['41.1833333', '81.85', '-180.0', '-168.9833333']] Russia
     aircrafts = OpenSkyClient().get_aircraft_in_bbox(coord)
-    print(f'Над {user_country} находится {len(aircrafts)} самолетов.')
+    print(f"Над {user_country} находится {len(aircrafts)} самолетов.")
     if len(aircrafts) == 0:
         print("Проверьте соединение с интернетом и запустите программу!")
     list_class_aircraft = []
@@ -125,25 +147,48 @@ def user_interaction():
             list_class_aircraft.append(plane)
         except Exception as e:
             print(f"Не удалось создать объект под номером {i}: {e}")
-    n = int(input("Введите количество самолетов для вывода в топ N: "))
     sort_altitude = input("Вам необходима сортировка самолетов от минимальной высоты и выше?: y/n ").lower()
+    n = number_of_top()
     sorted_aircraft = sort_aircraft_by_altitude(list_class_aircraft, sort_altitude)
     for aircraft in sorted_aircraft[:n]:
         print(aircraft)
+    print("*" * 150)
     unique_countries_tuple = tuple({plane.origin_country for plane in sorted_aircraft})
-    print('Для сортировки самолетов по стране регистрации скопируйте страну из списка: ')
+    print("Для сортировки самолетов по стране регистрации скопируйте страну из списка: ")
     for c in range(0, len(unique_countries_tuple), 9):
-        print(unique_countries_tuple[c : (9 + c)])
+        print(unique_countries_tuple[c: (9 + c)])
     filter_words = country_for_coord([])
     filtered_aeroplanes = filter_aeroplanes_by_country(sorted_aircraft, filter_words)
-    print(f'Получилось {len(filtered_aeroplanes)} самолетов по стране регистрации')
+    print(f"Получилось {len(filtered_aeroplanes)} самолетов по стране регистрации")
+    n = number_of_top()
     for i in filtered_aeroplanes[:n]:
         print(i)
+    print("*" * 150)
     filtered_aeroplanes_alt = filter_aeroplanes_altitude(sorted_aircraft)
-    print(f'Получилось {len(filtered_aeroplanes_alt)} самолетов в диапазоне выбранных высот')
+    print(f"Получилось {len(filtered_aeroplanes_alt)} самолетов в диапазоне выбранных высот")
+    n = number_of_top()
     for r in filtered_aeroplanes_alt[:n]:
         print(r)
-    return filtered_aeroplanes_alt
+    print("*" * 150)
+    choose_user_data = int(
+        input(
+            "Для сохранения данных в файл сделайте введите соответствующий пункт:\n"
+            "    1) Сохранить базу данных всех самолетов находящихся в пределах выбранных стран\n"
+            "    2) Сохранить базу данных самолетов, выбранных по стране регистрации\n"
+            "    3) Сохранить базу данных самолетов, выбранных по диапазону высот\n"
+            "    4) Ничего не сохранять (можно ничего не вводить)\n"
+            "Сделайте свой выбор: "
+        )
+    )
+    if choose_user_data == 1:
+        data_planes = sorted_aircraft
+    elif choose_user_data == 2:
+        data_planes = filtered_aeroplanes
+    elif choose_user_data == 3:
+        data_planes = filtered_aeroplanes_alt
+    else:
+        data_planes = []
+    return data_planes
 
 
 if __name__ == "__main__":
@@ -152,8 +197,10 @@ if __name__ == "__main__":
     # Работа с JSON-хранилищем
     timestamp = datetime.now().strftime("%Y%m%d")
     json_storage = JSONSaver(f"data/aircraft_{timestamp}.json")
-    for u in planes:
-        json_storage.add_aircraft(u)
+    planes_dicts = [plane.to_dict() for plane in planes]
+    json_storage._save_data(planes_dicts)
+    # for u in planes:
+    #     json_storage.add_aircraft(u)
     # json_storage.add_aircraft(a2)
     # json_storage.add_aircraft(a3)
 
@@ -162,18 +209,18 @@ if __name__ == "__main__":
     # print("Все самолёты:", all_aircraft)
 
     # # Получение самолётов из Ирландии
-    # canada = json_storage.get_aircraft({"country": "United States"})
+    # canada = json_storage.get_aircraft({"country": "Canada"})
     # print("Самолёты из Канады:", canada)
     #
-    # # Удаление самолёта из Швеции
+    # # Удаление самолётов из Армении
     # json_storage.delete_aircraft({"country": "Armenia"})
     #
     # # Проверка после удаления
     # after_delete = json_storage.get_aircraft()
-    # print("После удаления Канады:", after_delete)
+    # print("После удаления Армении:", after_delete)
     # planes = user_interaction()
-    ## Создаём несколько самолётов
 
+    # Создаём несколько самолётов
     # air_1 = planes[1]
     # air_2 = planes[3]
     # print(air_1)

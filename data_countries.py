@@ -1,4 +1,4 @@
-def data_countries():
+def list_countries() -> list:
     return [
         "Afghanistan",
         "Albania",

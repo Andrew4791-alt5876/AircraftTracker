@@ -24,7 +24,8 @@ class OpenSkyClient(APIClient):
         Получает список самолётов в прямоугольной области (bounding box).
         Возвращает сырые данные в виде списка.
         """
-        if list_of_coord_country == []:
+        if not list_of_coord_country:
+            print("В запросе отсутствуют координаты страны!")
             return []
         list_of_aircraft = []
         n = 0

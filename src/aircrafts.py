@@ -27,11 +27,11 @@ class Aircraft:
         self.latitude = float(latitude) if isinstance(latitude, (int, float)) and -90 <= latitude <= 90 else 0.0
 
         # Высоты (барометрическая и геометрическая)
-        self.bar_altitude = float(bar_altitude) if isinstance(bar_altitude, (int, float)) and bar_altitude >= 0 else 0.0
+        self.bar_altitude = (
+            float(bar_altitude) if isinstance(bar_altitude, (int, float)) and bar_altitude >= 0 else 0.0
+        )
         self.geo_altitude = (
-            float(geo_altitude)
-            if isinstance(geo_altitude, (int, float)) and geo_altitude >= 0
-            else self.bar_altitude
+            float(geo_altitude) if isinstance(geo_altitude, (int, float)) and geo_altitude >= 0 else self.bar_altitude
         )
 
         # Состояние на земле
