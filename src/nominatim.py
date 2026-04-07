@@ -1,4 +1,5 @@
-from datetime import time
+import time
+from typing import Any, Optional, cast
 
 from src.base_api import APIClient
 
@@ -9,24 +10,22 @@ class NominatimClient(APIClient):
     Используется для получения географических координат стран.
     """
 
-    def __init__(self):
-        super().__init__("https://nominatim.openstreetmap.org")
+    def __init__(self, endpoint: str = "/search") -> None:
+        super().__init__("https://nominatim.openstreetmap.org", endpoint=endpoint)
         self.headers = {"User-Agent": "MyAircraftTracker/1.0 (tyrandr@list.ru)"}
+        self._last_request_time: float = 0.0
 
-    def _rate_limit(self):
-        """Ожидает, чтобы с момента последнего запроса прошло не менее 1 секунды."""
+    def _rate_limit(self) -> None:
         now = time.time()
-        elapsed = now - NominatimClient._last_request_time
-        if elapsed < 1.0:
-            time.sleep(1.0 - elapsed)
-        NominatimClient._last_request_time = time.time()
+        if now - self._last_request_time < 1:
+            time.sleep(1 - (now - self._last_request_time))
+        self._last_request_time = time.time()
 
-    def get_data(self, endpoint: str, params: dict = None) -> dict:
-        """Реализация абстрактного метода get_data."""
-        params = params or {}
-        params["format"] = "json"  # добавляем обязательный параметр для Nominatim
-        self._rate_limit()
-        return self._make_request(endpoint, params, headers=self.headers)
+    def get_data(self, params: Optional[dict[Any, Any]] = None) -> dict[Any, Any]:
+        url = f"{self.base_url}{self.endpoint}"  # предполагаем, что endpoint задан в __init__
+        response = self.session.get(url, params=params)
+        response.raise_for_status()
+        return cast(dict[Any, Any], response.json())
 
     def get_country_coordinates(self, country_name: list) -> list:
         list_of_coord = []
@@ -37,6 +36,6 @@ class NominatimClient(APIClient):
                 coord_of_country = data[0]["boundingbox"]
                 list_of_coord.append(coord_of_country)
                 return list_of_coord
-            except (ValueError, IndexError, TypeError) as e:
+            except (ValueError, IndexError, TypeError, KeyError):
                 return []
         return list_of_coord

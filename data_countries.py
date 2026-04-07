@@ -1,4 +1,4 @@
-def data_countries():
+def list_countries() -> list:
     return [
         "Afghanistan",
         "Albania",
@@ -66,6 +66,7 @@ def data_countries():
         "Georgia",
         "Germany",
         "Ghana",
+        "GB",
         "Greece",
         "Grenada",
         "Guatemala",
@@ -183,9 +184,8 @@ def data_countries():
         "Tuvalu",
         "Uganda",
         "Ukraine",
-        "United Arab Emirates",
-        "United Kingdom",
-        "United States of America",
+        "UAE",
+        "USA",
         "Uruguay",
         "Uzbekistan",
         "Vanuatu",
