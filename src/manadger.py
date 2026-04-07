@@ -117,7 +117,3 @@ class DBManager:
         """Закрывает соединение с БД."""
         if self.conn:
             self.conn.close()
-
-if __name__ == '__main__':
-    db = DBManager(dbname='your_db', user='your_user', password='your_password')
-    print(db.get_companies_and_vacancies_count())
