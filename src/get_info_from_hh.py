@@ -23,5 +23,3 @@ def get_info() -> list:
                 }
             )
     return final_list
-
-print(get_info())
