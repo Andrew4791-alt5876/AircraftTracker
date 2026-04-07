@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "pythonproject2"
+name = "Course_work_3"
 version = "0.1.0"
 description = ""
 authors = ["Andrei Tiurin"]
@@ -7,6 +7,8 @@ authors = ["Andrei Tiurin"]
 [tool.poetry.dependencies]
 python = "^3.13"
 requests = "^2.33.1"
+psycopg2 = "^2.9.11"
+psycopg2-binary = "^2.9.11"
 
 [build-system]
 requires = ["poetry-core"]
